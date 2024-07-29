@@ -5,18 +5,11 @@ namespace ExpressionCalculator.Lib
 {
     public class ExpressionConverter : IExpressionConverter
     {
-        private string _expression;
+        private ILexer _lexer;
 
-        public ExpressionConverter(string expression)
+        public ExpressionConverter(ILexer lexer)
         {
-            Regex inputValidation = new Regex("^([0-9\\+\\-\\*\\/])+$");
-            var match = inputValidation.Match(expression);
-            if (!match.Success)
-            {
-                throw new ArgumentException("Expression must contain only digits and addition/substraction/multiplication operators");
-            }
-
-            _expression = expression;
+            _lexer = lexer;
         }
 
         public long Compute()
@@ -70,49 +63,41 @@ namespace ExpressionCalculator.Lib
         public Queue<IExpressionSymbol> ConvertToQueue()
         {
             Queue<IExpressionSymbol> postfixedExpression = new Queue<IExpressionSymbol>();
-            StringBuilder operandBuilder = new StringBuilder();
             Stack<Operator> operatorBuffer = new Stack<Operator>();
 
-            foreach (char c in _expression)
+            var tokens = _lexer.GetTokens();
+            foreach (string token in tokens)
             {
-                if (Char.IsDigit(c))
+                if (Operator.IsOperator(token))
                 {
-                    operandBuilder.Append(c);
-                }
-                else
-                {
-                    Operator nextOperator = new Operator(c);
-                    if (operandBuilder.Length > 0)
+                    Operator nextOperator = new Operator(token);
+
+                    // Only add operator to the expression if the next one isn't higher priority (i.e. defer computation if last operand is involved in higher priority operation)
+                    if (operatorBuffer.Count > 0)
                     {
-                        postfixedExpression.Enqueue(new Operand(operandBuilder.ToString()));
-                        operandBuilder.Clear();
-                        if (operatorBuffer.Count > 0)
+                        if (operatorBuffer.Peek() >= nextOperator || nextOperator.Priority == 5)
                         {
-                            // Only add operator to the expression if the next one isn't higher priority (i.e. defer computation if last operand is involved in higher priority operation)
-                            if (operatorBuffer.Peek() >= nextOperator)
+                            while (operatorBuffer.Count > 0 && operatorBuffer.Peek().Priority != 4)
                             {
-                                while (operatorBuffer.Count > 0)
-                                {
-                                    postfixedExpression.Enqueue(operatorBuffer.Pop());
-                                }
+                                postfixedExpression.Enqueue(operatorBuffer.Pop());
+                            }
+
+                            if(operatorBuffer.Count > 0 && operatorBuffer.Peek().Priority == 4 && nextOperator.Priority == 5)
+                            {
+                                operatorBuffer.Pop();
                             }
                         }
                     }
 
-                    operatorBuffer.Push(nextOperator);
+                    if (nextOperator.Priority != 5)
+                    {
+                        operatorBuffer.Push(nextOperator);
+                    }
                 }
-            }
-
-            if (operandBuilder.Length == 0)
-            {
-                throw new InvalidOperationException("Missing operand");
-            }
-
-            postfixedExpression.Enqueue(new Operand(operandBuilder.ToString()));
-
-            if (operatorBuffer.Count == 0)
-            {
-                throw new InvalidOperationException("Missing operator");
+                else
+                {
+                    postfixedExpression.Enqueue(new Operand(token));
+                }
             }
 
             while (operatorBuffer.Count > 0)

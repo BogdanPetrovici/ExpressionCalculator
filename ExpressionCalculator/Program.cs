@@ -12,7 +12,8 @@ namespace ExpressionCalculator
 
             try
             {
-                ExpressionConverter expression = new ExpressionConverter(userInput);
+                ILexer lexer = new ArithmeticExpressionLexer(userInput);
+                ExpressionConverter expression = new ExpressionConverter(lexer);
                 Console.WriteLine("Result: {0}", expression.Compute());
             }
             catch (Exception ex)
