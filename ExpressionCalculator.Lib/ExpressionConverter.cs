@@ -40,6 +40,10 @@ namespace ExpressionCalculator.Lib
                         case "+": operandStack.Push(firstOperand + secondOperand); break;
                         case "-": operandStack.Push(firstOperand - secondOperand); break;
                         case "*": operandStack.Push(firstOperand * secondOperand); break;
+                        case "/":
+                            if (secondOperand == 0) { throw new InvalidOperationException("Division by zero."); }
+                            operandStack.Push(firstOperand / secondOperand);
+                            break;
                     }
                 }
                 else

@@ -54,6 +54,28 @@ namespace ExpressionCalculator.Test
         }
 
         [Test]
+        public void ExpressionConverter_InputExpressionWithDivision_ReturnsPostfixNotation()
+        {
+            var converter = new ExpressionConverter("12+45/9-5*10+8");
+            var postfixedExpression = converter.ConvertToQueue();
+            Assert.IsNotNull(postfixedExpression);
+            Assert.That(postfixedExpression.Count, Is.EqualTo(11));
+            Assert.That(postfixedExpression.Dequeue().ToString(), Is.EqualTo("12"));
+            Assert.That(postfixedExpression.Dequeue().ToString(), Is.EqualTo("45"));
+            Assert.That(postfixedExpression.Dequeue().ToString(), Is.EqualTo("9"));
+            Assert.That(postfixedExpression.Dequeue().ToString(), Is.EqualTo("/"));
+            Assert.That(postfixedExpression.Dequeue().ToString(), Is.EqualTo("+"));
+            Assert.That(postfixedExpression.Dequeue().ToString(), Is.EqualTo("5"));
+            Assert.That(postfixedExpression.Dequeue().ToString(), Is.EqualTo("10"));
+            Assert.That(postfixedExpression.Dequeue().ToString(), Is.EqualTo("*"));
+            Assert.That(postfixedExpression.Dequeue().ToString(), Is.EqualTo("-"));
+            Assert.That(postfixedExpression.Dequeue().ToString(), Is.EqualTo("8"));
+            Assert.That(postfixedExpression.Dequeue().ToString(), Is.EqualTo("+"));
+
+            Assert.That(converter.Convert(), Is.EqualTo("12 45 9 / + 5 10 * - 8 + "));
+        }
+
+        [Test]
         public void ExpressionConverter_MissingOperand_ThrowsException()
         {
             var converter = new ExpressionConverter("12+3++");
@@ -81,6 +103,18 @@ namespace ExpressionCalculator.Test
             var converter = new ExpressionConverter("12+45-5*10+8");
             var result = converter.Compute();
             Assert.That(result, Is.EqualTo(15));
+        }
+
+        [Test]
+        public void ExpressionConverter_InputExpressionWithDivision_ComputesExpression()
+        {
+            var converter = new ExpressionConverter("12+45/5-5*10+8");
+            var result = converter.Compute();
+            Assert.That(result, Is.EqualTo(-21));
+
+            converter = new ExpressionConverter("12+45/5-5*10/2+8");
+            result = converter.Compute();
+            Assert.That(result, Is.EqualTo(4));
         }
     }
 }
