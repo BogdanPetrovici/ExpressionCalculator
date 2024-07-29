@@ -3,7 +3,7 @@
     public interface IExpressionConverter
     {
         public string Convert();
-        public Queue<string> ConvertToQueue();
+        public Queue<IExpressionSymbol> ConvertToQueue();
         public long Compute();
     }
 }

@@ -6,15 +6,14 @@ namespace ExpressionCalculator.Lib
     public class ExpressionConverter : IExpressionConverter
     {
         private string _expression;
-        private readonly string _allowedOperators = "+-*";
 
         public ExpressionConverter(string expression)
         {
-            Regex inputValidation = new Regex("^([0-9\\+\\-\\*])+$");
+            Regex inputValidation = new Regex("^([0-9\\+\\-\\*\\/])+$");
             var match = inputValidation.Match(expression);
             if (!match.Success)
             {
-                throw new ArgumentException("Expression must contain only digits, spaces and addition/substraction operators");
+                throw new ArgumentException("Expression must contain only digits and addition/substraction/multiplication operators");
             }
 
             _expression = expression;
@@ -29,29 +28,27 @@ namespace ExpressionCalculator.Lib
             }
 
             Stack<long> operandStack = new Stack<long>();
-            long operand;
             while (postfixedExpression.Count > 0)
             {
-                var expressionOperand = postfixedExpression.Dequeue();
-                if (_allowedOperators.Contains(expressionOperand))
+                var expressionSymbol = postfixedExpression.Dequeue();
+                if (expressionSymbol is IOperator)
                 {
                     var secondOperand = operandStack.Pop();
                     var firstOperand = operandStack.Pop();
-                    switch (expressionOperand)
+                    switch (expressionSymbol.ToString())
                     {
                         case "+": operandStack.Push(firstOperand + secondOperand); break;
                         case "-": operandStack.Push(firstOperand - secondOperand); break;
                         case "*": operandStack.Push(firstOperand * secondOperand); break;
+                        case "/":
+                            if (secondOperand == 0) { throw new InvalidOperationException("Division by zero."); }
+                            operandStack.Push(firstOperand / secondOperand);
+                            break;
                     }
                 }
                 else
                 {
-                    if (!long.TryParse(expressionOperand, out operand))
-                    {
-                        throw new InvalidCastException("Operand is not a valid long integer");
-                    }
-
-                    operandStack.Push(operand);
+                    operandStack.Push((expressionSymbol as IOperand).Value);
                 }
             }
 
@@ -70,29 +67,11 @@ namespace ExpressionCalculator.Lib
             return result.ToString();
         }
 
-        /// <summary>
-        /// Checks if the first operator is of higher priority than the second one
-        /// </summary>
-        /// <param name="operator1">First operator - character representing either addition, substraction or multiplication</param>
-        /// <param name="operator2">Second operator - character representing either addition, substraction or multiplication</param>
-        /// <returns>True if the first operator has a higher priority. Otherwise, false.</returns>
-        /// <exception cref="ArgumentOutOfRangeException">Throws ArgumentOutOfRangeException if either argument is not a character representing addition, substraction or multiplication.</exception>
-        private bool IsHigherPriority(char operator1, char operator2)
+        public Queue<IExpressionSymbol> ConvertToQueue()
         {
-            if (!_allowedOperators.Contains(operator1) || !_allowedOperators.Contains(operator2))
-            {
-                throw new ArgumentOutOfRangeException("Operator not supported");
-            }
-
-            if (operator2 == '*') { return false; }
-            else { return true; }
-        }
-
-        public Queue<string> ConvertToQueue()
-        {
-            Queue<string> postfixedExpression = new Queue<string>();
+            Queue<IExpressionSymbol> postfixedExpression = new Queue<IExpressionSymbol>();
             StringBuilder operandBuilder = new StringBuilder();
-            Stack<char> operatorBuffer = new Stack<char>();
+            Stack<Operator> operatorBuffer = new Stack<Operator>();
 
             foreach (char c in _expression)
             {
@@ -102,24 +81,25 @@ namespace ExpressionCalculator.Lib
                 }
                 else
                 {
+                    Operator nextOperator = new Operator(c);
                     if (operandBuilder.Length > 0)
                     {
-                        postfixedExpression.Enqueue(operandBuilder.ToString());
+                        postfixedExpression.Enqueue(new Operand(operandBuilder.ToString()));
                         operandBuilder.Clear();
                         if (operatorBuffer.Count > 0)
                         {
                             // Only add operator to the expression if the next one isn't higher priority (i.e. defer computation if last operand is involved in higher priority operation)
-                            if (IsHigherPriority(operatorBuffer.Peek(), c))
+                            if (operatorBuffer.Peek() >= nextOperator)
                             {
-                                while(operatorBuffer.Count > 0)
+                                while (operatorBuffer.Count > 0)
                                 {
-                                    postfixedExpression.Enqueue(operatorBuffer.Pop().ToString());
+                                    postfixedExpression.Enqueue(operatorBuffer.Pop());
                                 }
                             }
                         }
                     }
 
-                    operatorBuffer.Push(c);
+                    operatorBuffer.Push(nextOperator);
                 }
             }
 
@@ -128,7 +108,7 @@ namespace ExpressionCalculator.Lib
                 throw new InvalidOperationException("Missing operand");
             }
 
-            postfixedExpression.Enqueue(operandBuilder.ToString());
+            postfixedExpression.Enqueue(new Operand(operandBuilder.ToString()));
 
             if (operatorBuffer.Count == 0)
             {
@@ -137,7 +117,7 @@ namespace ExpressionCalculator.Lib
 
             while (operatorBuffer.Count > 0)
             {
-                postfixedExpression.Enqueue(operatorBuffer.Pop().ToString());
+                postfixedExpression.Enqueue(operatorBuffer.Pop());
             }
 
             return postfixedExpression;
