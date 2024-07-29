@@ -11,11 +11,11 @@ namespace ExpressionCalculator.Lib
     /// </summary>
     public class Operator : IOperator
     {
-        private readonly string _allowedOperators = "+-*/";
-        private char _operator;
+        private readonly static string _allowedOperators = "+-*/()";
+        private string _operator;
         private int _priority;
 
-        public Operator(char c)
+        public Operator(string c)
         {
             if (!_allowedOperators.Contains(c))
             {
@@ -25,21 +25,27 @@ namespace ExpressionCalculator.Lib
             _operator = c;
             switch (_operator)
             {
-                case '+':
-                case '-':
+                case "+":
+                case "-":
                     _priority = 1;
                     break;
-                case '*':
+                case "*":
                     _priority = 2;
                     break;
-                case '/':
+                case "/":
                     _priority = 3;
+                    break;
+                case "(":
+                    _priority = 4;
+                    break;
+                case ")":
+                    _priority = 5;
                     break;
             }
         }
 
         /// <summary>
-        /// Operator priority can have values 1,2,3
+        /// Operator priority can have values 1,2,3,4,5
         /// </summary>
         public int Priority { get { return _priority; } }
 
@@ -88,5 +94,7 @@ namespace ExpressionCalculator.Lib
         }
 
         public override string ToString() { return _operator.ToString(); }
+
+        public static bool IsOperator(string c) { return _allowedOperators.Contains(c); }
     }
 }
