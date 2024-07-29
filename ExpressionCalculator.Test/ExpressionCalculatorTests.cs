@@ -22,13 +22,13 @@ namespace ExpressionCalculator.Test
             var postfixedExpression = converter.ConvertToQueue();
             Assert.IsNotNull(postfixedExpression);
             Assert.That(postfixedExpression.Count, Is.EqualTo(7));
-            Assert.That(postfixedExpression.Dequeue, Is.EqualTo("12"));
-            Assert.That(postfixedExpression.Dequeue, Is.EqualTo("45"));
-            Assert.That(postfixedExpression.Dequeue, Is.EqualTo("+"));
-            Assert.That(postfixedExpression.Dequeue, Is.EqualTo("56"));
-            Assert.That(postfixedExpression.Dequeue, Is.EqualTo("-"));
-            Assert.That(postfixedExpression.Dequeue, Is.EqualTo("8"));
-            Assert.That(postfixedExpression.Dequeue, Is.EqualTo("+"));
+            Assert.That(postfixedExpression.Dequeue().ToString(), Is.EqualTo("12"));
+            Assert.That(postfixedExpression.Dequeue().ToString(), Is.EqualTo("45"));
+            Assert.That(postfixedExpression.Dequeue().ToString(), Is.EqualTo("+"));
+            Assert.That(postfixedExpression.Dequeue().ToString(), Is.EqualTo("56"));
+            Assert.That(postfixedExpression.Dequeue().ToString(), Is.EqualTo("-"));
+            Assert.That(postfixedExpression.Dequeue().ToString(), Is.EqualTo("8"));
+            Assert.That(postfixedExpression.Dequeue().ToString(), Is.EqualTo("+"));
 
             Assert.That(converter.Convert(), Is.EqualTo("12 45 + 56 - 8 + "));
         }
@@ -40,15 +40,15 @@ namespace ExpressionCalculator.Test
             var postfixedExpression = converter.ConvertToQueue();
             Assert.IsNotNull(postfixedExpression);
             Assert.That(postfixedExpression.Count, Is.EqualTo(9));
-            Assert.That(postfixedExpression.Dequeue, Is.EqualTo("12"));
-            Assert.That(postfixedExpression.Dequeue, Is.EqualTo("45"));
-            Assert.That(postfixedExpression.Dequeue, Is.EqualTo("+"));
-            Assert.That(postfixedExpression.Dequeue, Is.EqualTo("5"));
-            Assert.That(postfixedExpression.Dequeue, Is.EqualTo("10"));
-            Assert.That(postfixedExpression.Dequeue, Is.EqualTo("*"));
-            Assert.That(postfixedExpression.Dequeue, Is.EqualTo("-"));
-            Assert.That(postfixedExpression.Dequeue, Is.EqualTo("8"));
-            Assert.That(postfixedExpression.Dequeue, Is.EqualTo("+"));
+            Assert.That(postfixedExpression.Dequeue().ToString(), Is.EqualTo("12"));
+            Assert.That(postfixedExpression.Dequeue().ToString(), Is.EqualTo("45"));
+            Assert.That(postfixedExpression.Dequeue().ToString(), Is.EqualTo("+"));
+            Assert.That(postfixedExpression.Dequeue().ToString(), Is.EqualTo("5"));
+            Assert.That(postfixedExpression.Dequeue().ToString(), Is.EqualTo("10"));
+            Assert.That(postfixedExpression.Dequeue().ToString(), Is.EqualTo("*"));
+            Assert.That(postfixedExpression.Dequeue().ToString(), Is.EqualTo("-"));
+            Assert.That(postfixedExpression.Dequeue().ToString(), Is.EqualTo("8"));
+            Assert.That(postfixedExpression.Dequeue().ToString(), Is.EqualTo("+"));
 
             Assert.That(converter.Convert(), Is.EqualTo("12 45 + 5 10 * - 8 + "));
         }
