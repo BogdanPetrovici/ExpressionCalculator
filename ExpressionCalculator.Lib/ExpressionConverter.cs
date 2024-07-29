@@ -9,7 +9,7 @@ namespace ExpressionCalculator.Lib
 
         public ExpressionConverter(string expression)
         {
-            Regex inputValidation = new Regex("^([0-9\\+\\-\\s])+$");
+            Regex inputValidation = new Regex("^([0-9\\+\\-\\*])+$");
             var match = inputValidation.Match(expression);
             if (!match.Success)
             {
@@ -76,40 +76,23 @@ namespace ExpressionCalculator.Lib
 
             foreach (char c in _expression)
             {
-                if (Char.IsWhiteSpace(c))
+                if (Char.IsDigit(c))
+                {
+                    operandBuilder.Append(c);
+                }
+                else
                 {
                     if (operandBuilder.Length > 0)
                     {
                         postfixedExpression.Enqueue(operandBuilder.ToString());
                         operandBuilder.Clear();
-
                         if (operationBuffer.HasValue)
                         {
                             postfixedExpression.Enqueue(operationBuffer.ToString());
-                            operationBuffer = null;
                         }
                     }
-                }
-                else
-                {
-                    if (Char.IsDigit(c))
-                    {
-                        operandBuilder.Append(c);
-                    }
-                    else
-                    {
-                        if (operandBuilder.Length > 0)
-                        {
-                            postfixedExpression.Enqueue(operandBuilder.ToString());
-                            operandBuilder.Clear();
-                            if (operationBuffer.HasValue)
-                            {
-                                postfixedExpression.Enqueue(operationBuffer.ToString());
-                            }
-                        }
 
-                        operationBuffer = c;
-                    }
+                    operationBuffer = c;
                 }
             }
 

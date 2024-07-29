@@ -12,13 +12,13 @@ namespace ExpressionCalculator.Test
         [Test]
         public void ExpressionConverter_InitializedWithInvalidCharacters_ThrowsException()
         {
-            Assert.Throws<ArgumentException>(() => new ExpressionConverter("12+ 45 - 56e + 8"));
+            Assert.Throws<ArgumentException>(() => new ExpressionConverter("12+45-56e+8"));
         }
 
         [Test]
         public void ExpressionConverter_InitializedCorrectly_ReturnsPostfixNotation()
         {
-            var converter = new ExpressionConverter("12+ 45 - 56 + 8");
+            var converter = new ExpressionConverter("12+45-56+8");
             var postfixedExpression = converter.ConvertToQueue();
             Assert.IsNotNull(postfixedExpression);
             Assert.That(postfixedExpression.Count, Is.EqualTo(7));
@@ -36,21 +36,21 @@ namespace ExpressionCalculator.Test
         [Test]
         public void ExpressionConverter_MissingOperand_ThrowsException()
         {
-            var converter = new ExpressionConverter("12 + 3 ++");
+            var converter = new ExpressionConverter("12+3++");
             Assert.Throws<InvalidOperationException>(() => converter.Convert());
         }
 
         [Test]
         public void ExpressionConverter_MissingOperator_ThrowsException()
         {
-            var converter = new ExpressionConverter("12 + 3 8");
+            var converter = new ExpressionConverter("12");
             Assert.Throws<InvalidOperationException>(() => converter.Convert());
         }
 
         [Test]
         public void ExpressionConverter_InitializedCorrectly_ComputesExpression()
         {
-            var converter = new ExpressionConverter("12+ 45 - 56 + 8");
+            var converter = new ExpressionConverter("12+45-56+8");
             var result = converter.Compute();
             Assert.That(result, Is.EqualTo(9));
         }
