@@ -1,10 +1,24 @@
-﻿namespace ExpressionCalculator
+﻿using ExpressionCalculator.Lib;
+using System.Text.RegularExpressions;
+
+namespace ExpressionCalculator
 {
     internal class Program
     {
         static void Main(string[] args)
         {
-            Console.WriteLine("Hello, World!");
+            Console.WriteLine("Input expression: ");
+            string userInput = Console.ReadLine();
+
+            try
+            {
+                ExpressionConverter expression = new ExpressionConverter(userInput);
+                Console.WriteLine("Result: {0}", expression.Compute());
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("An error occurred: ", ex);
+            }
         }
     }
 }
