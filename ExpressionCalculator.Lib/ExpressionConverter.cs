@@ -6,6 +6,7 @@ namespace ExpressionCalculator.Lib
     public class ExpressionConverter : IExpressionConverter
     {
         private string _expression;
+        private readonly string _allowedOperators = "+-*";
 
         public ExpressionConverter(string expression)
         {
@@ -32,7 +33,7 @@ namespace ExpressionCalculator.Lib
             while (postfixedExpression.Count > 0)
             {
                 var expressionOperand = postfixedExpression.Dequeue();
-                if ("+-".Contains(expressionOperand))
+                if (_allowedOperators.Contains(expressionOperand))
                 {
                     var secondOperand = operandStack.Pop();
                     var firstOperand = operandStack.Pop();
@@ -40,6 +41,7 @@ namespace ExpressionCalculator.Lib
                     {
                         case "+": operandStack.Push(firstOperand + secondOperand); break;
                         case "-": operandStack.Push(firstOperand - secondOperand); break;
+                        case "*": operandStack.Push(firstOperand * secondOperand); break;
                     }
                 }
                 else
@@ -68,11 +70,29 @@ namespace ExpressionCalculator.Lib
             return result.ToString();
         }
 
+        /// <summary>
+        /// Checks if the first operator is of higher priority than the second one
+        /// </summary>
+        /// <param name="operator1">First operator - character representing either addition, substraction or multiplication</param>
+        /// <param name="operator2">Second operator - character representing either addition, substraction or multiplication</param>
+        /// <returns>True if the first operator has a higher priority. Otherwise, false.</returns>
+        /// <exception cref="ArgumentOutOfRangeException">Throws ArgumentOutOfRangeException if either argument is not a character representing addition, substraction or multiplication.</exception>
+        private bool IsHigherPriority(char operator1, char operator2)
+        {
+            if (!_allowedOperators.Contains(operator1) || !_allowedOperators.Contains(operator2))
+            {
+                throw new ArgumentOutOfRangeException("Operator not supported");
+            }
+
+            if (operator2 == '*') { return false; }
+            else { return true; }
+        }
+
         public Queue<string> ConvertToQueue()
         {
             Queue<string> postfixedExpression = new Queue<string>();
             StringBuilder operandBuilder = new StringBuilder();
-            char? operationBuffer = null;
+            Stack<char> operatorBuffer = new Stack<char>();
 
             foreach (char c in _expression)
             {
@@ -86,13 +106,20 @@ namespace ExpressionCalculator.Lib
                     {
                         postfixedExpression.Enqueue(operandBuilder.ToString());
                         operandBuilder.Clear();
-                        if (operationBuffer.HasValue)
+                        if (operatorBuffer.Count > 0)
                         {
-                            postfixedExpression.Enqueue(operationBuffer.ToString());
+                            // Only add operator to the expression if the next one isn't higher priority (i.e. defer computation if last operand is involved in higher priority operation)
+                            if (IsHigherPriority(operatorBuffer.Peek(), c))
+                            {
+                                while(operatorBuffer.Count > 0)
+                                {
+                                    postfixedExpression.Enqueue(operatorBuffer.Pop().ToString());
+                                }
+                            }
                         }
                     }
 
-                    operationBuffer = c;
+                    operatorBuffer.Push(c);
                 }
             }
 
@@ -103,12 +130,16 @@ namespace ExpressionCalculator.Lib
 
             postfixedExpression.Enqueue(operandBuilder.ToString());
 
-            if (!operationBuffer.HasValue)
+            if (operatorBuffer.Count == 0)
             {
                 throw new InvalidOperationException("Missing operator");
             }
 
-            postfixedExpression.Enqueue(operationBuffer.ToString());
+            while (operatorBuffer.Count > 0)
+            {
+                postfixedExpression.Enqueue(operatorBuffer.Pop().ToString());
+            }
+
             return postfixedExpression;
         }
     }
