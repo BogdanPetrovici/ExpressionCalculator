@@ -1,6 +1,7 @@
 ﻿using ExpressionCalculator.Lib;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -64,6 +65,45 @@ namespace ExpressionCalculator.Test
 
             lexer = new ArithmeticExpressionLexer("5 *4");
             Assert.Throws<InvalidOperationException>(() => lexer.GetTokens());
+        }
+
+        [Test]
+        public void Lexer_FloatingPointExpression_ReturnsTokens()
+        {
+            ILexer lexer = new ArithmeticExpressionLexer("12.8975+45.6/0.5-5*10.4/(2.44+8)");
+            var tokens = lexer.GetTokens();
+            var tokenEnumerator = tokens.GetEnumerator();
+            tokenEnumerator.MoveNext();
+            Assert.That(tokenEnumerator.Current.ToString(), Is.EqualTo("12.8975"));
+            tokenEnumerator.MoveNext();
+            Assert.That(tokenEnumerator.Current.ToString(), Is.EqualTo("+"));
+            tokenEnumerator.MoveNext();
+            Assert.That(tokenEnumerator.Current.ToString(), Is.EqualTo("45.6"));
+            tokenEnumerator.MoveNext();
+            Assert.That(tokenEnumerator.Current.ToString(), Is.EqualTo("/"));
+            tokenEnumerator.MoveNext();
+            Assert.That(tokenEnumerator.Current.ToString(), Is.EqualTo("0.5"));
+            tokenEnumerator.MoveNext();
+            Assert.That(tokenEnumerator.Current.ToString(), Is.EqualTo("-"));
+            tokenEnumerator.MoveNext();
+            Assert.That(tokenEnumerator.Current.ToString(), Is.EqualTo("5"));
+            tokenEnumerator.MoveNext();
+            Assert.That(tokenEnumerator.Current.ToString(), Is.EqualTo("*"));
+            tokenEnumerator.MoveNext();
+            Assert.That(tokenEnumerator.Current.ToString(), Is.EqualTo("10.4"));
+            tokenEnumerator.MoveNext();
+            Assert.That(tokenEnumerator.Current.ToString(), Is.EqualTo("/"));
+            tokenEnumerator.MoveNext();
+            Assert.That(tokenEnumerator.Current.ToString(), Is.EqualTo("("));
+            tokenEnumerator.MoveNext();
+            Assert.That(tokenEnumerator.Current.ToString(), Is.EqualTo("2.44"));
+            tokenEnumerator.MoveNext();
+            Assert.That(tokenEnumerator.Current.ToString(), Is.EqualTo("+"));
+            tokenEnumerator.MoveNext();
+            Assert.That(tokenEnumerator.Current.ToString(), Is.EqualTo("8"));
+            tokenEnumerator.MoveNext();
+            Assert.That(tokenEnumerator.Current.ToString(), Is.EqualTo(")"));
+            Assert.That(tokenEnumerator.MoveNext(), Is.False);
         }
     }
 }

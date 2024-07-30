@@ -27,9 +27,9 @@ namespace ExpressionCalculator.Lib
         /// </summary>
         /// <returns>The result of the computation</returns>
         /// <exception cref="InvalidOperationException">Throws exception in case of missing operands (in operations with cardinality of 2) or division by zero</exception>
-        public long Compute()
+        public double Compute()
         {
-            Stack<long> operandStack = new Stack<long>();
+            Stack<double> operandStack = new Stack<double>();
             while (_postfixedExpression.Count > 0)
             {
                 var expressionSymbol = _postfixedExpression.Dequeue();
@@ -59,7 +59,7 @@ namespace ExpressionCalculator.Lib
                             operandStack.Push(firstOperand / secondOperand);
                             break;
                         case "^":
-                            operandStack.Push((long)Math.Pow(firstOperand, secondOperand));
+                            operandStack.Push(Math.Pow(firstOperand, secondOperand));
                             break;
                     }
                 }
@@ -74,7 +74,13 @@ namespace ExpressionCalculator.Lib
                 throw new InvalidOperationException();
             }
 
-            return operandStack.Pop();
+            var result = operandStack.Pop();
+            if (result == double.PositiveInfinity)
+            {
+                throw new InvalidOperationException("Result is too large");
+            }
+
+            return result;
         }
     }
 }

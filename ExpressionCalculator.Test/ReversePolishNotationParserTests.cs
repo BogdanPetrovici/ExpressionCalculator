@@ -2,7 +2,7 @@ using ExpressionCalculator.Lib;
 
 namespace ExpressionCalculator.Test
 {
-    public class ExpressionCalculatorTests
+    public class ReversePolishNotationParserTests
     {
         [SetUp]
         public void Setup()
@@ -10,7 +10,7 @@ namespace ExpressionCalculator.Test
         }
 
         [Test]
-        public void ExpressionConverter_InitializedWithInvalidCharacters_ThrowsException()
+        public void Parse_InitializedWithInvalidCharacters_ThrowsException()
         {
             var lexer = new ArithmeticExpressionLexer("12+45-56e+8");
             var converter = new ReversePolishNotationParser(lexer);
@@ -18,7 +18,7 @@ namespace ExpressionCalculator.Test
         }
 
         [Test]
-        public void ExpressionConverter_InitializedCorrectly_ReturnsPostfixNotation()
+        public void Parse_InitializedCorrectly_ReturnsPostfixNotation()
         {
             var lexer = new ArithmeticExpressionLexer("12+45-56+8");
             var converter = new ReversePolishNotationParser(lexer);
@@ -35,7 +35,7 @@ namespace ExpressionCalculator.Test
         }
 
         [Test]
-        public void ExpressionConverter_InputExpressionWithMultiplication_ReturnsPostfixNotation()
+        public void Parse_InputExpressionWithMultiplication_ReturnsPostfixNotation()
         {
             var lexer = new ArithmeticExpressionLexer("12+45-5*10+8");
             var converter = new ReversePolishNotationParser(lexer);
@@ -54,7 +54,7 @@ namespace ExpressionCalculator.Test
         }
 
         [Test]
-        public void ExpressionConverter_InputExpressionWithDivision_ReturnsPostfixNotation()
+        public void Parse_InputExpressionWithDivision_ReturnsPostfixNotation()
         {
             var lexer = new ArithmeticExpressionLexer("12+45/9-5*10+8");
             var converter = new ReversePolishNotationParser(lexer);
@@ -75,7 +75,7 @@ namespace ExpressionCalculator.Test
         }
 
         [Test]
-        public void ExpressionConverter_MissingOperand_ThrowsException()
+        public void Parse_MissingOperand_ThrowsException()
         {
             var lexer = new ArithmeticExpressionLexer("12+3++");
             var converter = new ReversePolishNotationParser(lexer);
@@ -85,7 +85,7 @@ namespace ExpressionCalculator.Test
         }
 
         [Test]
-        public void ExpressionConverter_ConstantExpression_ReturnsConstant()
+        public void Parse_ConstantExpression_ReturnsConstant()
         {
             var lexer = new ArithmeticExpressionLexer("12");
             var converter = new ReversePolishNotationParser(lexer);
@@ -95,7 +95,7 @@ namespace ExpressionCalculator.Test
         }
 
         [Test]
-        public void ExpressionConverter_InitializedCorrectly_ComputesExpression()
+        public void Parse_InitializedCorrectly_ComputesExpression()
         {
             var lexer = new ArithmeticExpressionLexer("12+45-56+8");
             var converter = new ReversePolishNotationParser(lexer);
@@ -105,7 +105,7 @@ namespace ExpressionCalculator.Test
         }
 
         [Test]
-        public void ExpressionConverter_InputExpressionWithMultiplication_ComputesExpression()
+        public void Parse_InputExpressionWithMultiplication_ComputesExpression()
         {
             var lexer = new ArithmeticExpressionLexer("12+45-5*10+8");
             var converter = new ReversePolishNotationParser(lexer);
@@ -115,7 +115,7 @@ namespace ExpressionCalculator.Test
         }
 
         [Test]
-        public void ExpressionConverter_InputExpressionWithDivision_ComputesExpression()
+        public void Parse_InputExpressionWithDivision_ComputesExpression()
         {
             var lexer = new ArithmeticExpressionLexer("12+45/5-5*10+8");
             var converter = new ReversePolishNotationParser(lexer);
@@ -131,7 +131,7 @@ namespace ExpressionCalculator.Test
         }
 
         [Test]
-        public void ExpressionConverter_InputExpressionWithBrackets_ComputesExpression()
+        public void Parse_InputExpressionWithBrackets_ComputesExpression()
         {
             var lexer = new ArithmeticExpressionLexer("5*(4+2)");
             var converter = new ReversePolishNotationParser(lexer);
@@ -177,7 +177,7 @@ namespace ExpressionCalculator.Test
         }
 
         [Test]
-        public void ExpressionConverter_MissingOpeningBracket_ComputesExpression()
+        public void Parse_MissingOpeningBracket_ComputesExpression()
         {
             var lexer = new ArithmeticExpressionLexer("5*4+2)");
             var converter = new ReversePolishNotationParser(lexer);
@@ -186,7 +186,7 @@ namespace ExpressionCalculator.Test
         }
 
         [Test]
-        public void ExpressionConverter_MissingClosingBracket_ComputesExpression()
+        public void Parse_MissingClosingBracket_ComputesExpression()
         {
             var lexer = new ArithmeticExpressionLexer("5*(4+2");
             var converter = new ReversePolishNotationParser(lexer);
@@ -195,7 +195,7 @@ namespace ExpressionCalculator.Test
         }
 
         [Test]
-        public void ExpressionConverter_SimpleExponentiationExpression_ComputesExpression()
+        public void Parse_SimpleExponentiationExpression_ComputesExpression()
         {
             var lexer = new ArithmeticExpressionLexer("5^2");
             var converter = new ReversePolishNotationParser(lexer);
@@ -211,7 +211,7 @@ namespace ExpressionCalculator.Test
         }
 
         [Test]
-        public void ExpressionConverter_InputExpressionWithExponentiation_ComputesExpression()
+        public void Parse_InputExpressionWithExponentiation_ComputesExpression()
         {
             var lexer = new ArithmeticExpressionLexer("(5-1)^(1+2)/8");
             var converter = new ReversePolishNotationParser(lexer);
