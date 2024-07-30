@@ -20,7 +20,7 @@ namespace ExpressionCalculator
             }
             catch (Exception ex)
             {
-                Console.WriteLine("An error occurred: ", ex);
+                Console.WriteLine("An error occurred: {0}", ex.Message);
             }
         }
     }
