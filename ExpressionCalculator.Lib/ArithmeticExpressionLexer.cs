@@ -16,10 +16,10 @@ namespace ExpressionCalculator.Lib
             _expression = expression;
         }
 
-        public IEnumerable<string> GetTokens()
+        public IEnumerable<IExpressionSymbol> GetTokens()
         {
             StringBuilder operand = new StringBuilder();
-            List<string> tokens = new List<string>();
+            List<IExpressionSymbol> tokens = new List<IExpressionSymbol>();
 
             foreach (char c in _expression)
             {
@@ -27,11 +27,21 @@ namespace ExpressionCalculator.Lib
                 {
                     if(operand.Length > 0)
                     {
-                        tokens.Add(operand.ToString());
+                        tokens.Add(new Operand(operand.ToString()));
                         operand.Clear();
                     }
 
-                    tokens.Add(c.ToString());
+                    tokens.Add(new Operator(c.ToString()));
+                }
+                else if (Separator.IsSeparator(c.ToString()))
+                {
+                    if (operand.Length > 0)
+                    {
+                        tokens.Add(new Operand(operand.ToString()));
+                        operand.Clear();
+                    }
+
+                    tokens.Add(new Separator(c.ToString()));
                 }
                 else if (Char.IsDigit(c) || c == '.')
                 {
@@ -45,7 +55,7 @@ namespace ExpressionCalculator.Lib
 
             if (operand.Length > 0)
             {
-                tokens.Add(operand.ToString());
+                tokens.Add(new Operand(operand.ToString()));
             }
 
             return tokens;

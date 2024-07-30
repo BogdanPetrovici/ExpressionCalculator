@@ -2,6 +2,6 @@
 {
     public interface ILexer
     {
-        public IEnumerable<string> GetTokens();
+        public IEnumerable<IExpressionSymbol> GetTokens();
     }
 }
