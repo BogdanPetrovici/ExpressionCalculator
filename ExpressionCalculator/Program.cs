@@ -13,8 +13,10 @@ namespace ExpressionCalculator
             try
             {
                 ILexer lexer = new ArithmeticExpressionLexer(userInput);
-                ExpressionConverter expression = new ExpressionConverter(lexer);
-                Console.WriteLine("Result: {0}", expression.Compute());
+                var parser = new ReversePolishNotationParser(lexer);
+                var postfixedExpression = parser.Parse();
+                var computer = new ExpressionComputer(postfixedExpression);
+                Console.WriteLine("Result: {0}", computer.Compute());
             }
             catch (Exception ex)
             {
