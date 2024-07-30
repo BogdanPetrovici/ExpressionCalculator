@@ -79,15 +79,19 @@ namespace ExpressionCalculator.Test
         {
             var lexer = new ArithmeticExpressionLexer("12+3++");
             var converter = new ReversePolishNotationParser(lexer);
-            Assert.Throws<InvalidOperationException>(() => converter.Parse());
+            var computer = new ExpressionComputer(converter.Parse());
+            var exception = Assert.Throws<InvalidOperationException>(() => computer.Compute());
+            Assert.That(exception.Message, Is.EqualTo("Missing operand"));
         }
 
         [Test]
-        public void ExpressionConverter_MissingOperator_ThrowsException()
+        public void ExpressionConverter_ConstantExpression_ReturnsConstant()
         {
             var lexer = new ArithmeticExpressionLexer("12");
             var converter = new ReversePolishNotationParser(lexer);
-            Assert.Throws<InvalidOperationException>(() => converter.Parse());
+            var computer = new ExpressionComputer(converter.Parse());
+            var result = computer.Compute();
+            Assert.That(result, Is.EqualTo(12));
         }
 
         [Test]
@@ -177,9 +181,8 @@ namespace ExpressionCalculator.Test
         {
             var lexer = new ArithmeticExpressionLexer("5*4+2)");
             var converter = new ReversePolishNotationParser(lexer);
-            var computer = new ExpressionComputer(converter.Parse());
-            var exception = Assert.Throws<InvalidOperationException>(() => computer.Compute());
-            Assert.That(exception.Message, Is.EqualTo("Missing opening bracket"));
+            var exception = Assert.Throws<InvalidOperationException>(() => converter.Parse());
+            Assert.That(exception.Message, Is.EqualTo("Missing open bracket"));
         }
 
         [Test]
@@ -187,9 +190,8 @@ namespace ExpressionCalculator.Test
         {
             var lexer = new ArithmeticExpressionLexer("5*(4+2");
             var converter = new ReversePolishNotationParser(lexer);
-            var computer = new ExpressionComputer(converter.Parse());
-            var exception = Assert.Throws<InvalidOperationException>(() => computer.Compute());
-            Assert.That(exception.Message, Is.EqualTo("Missing closing bracket"));
+            var exception = Assert.Throws<InvalidOperationException>(() => converter.Parse());
+            Assert.That(exception.Message, Is.EqualTo("Missing closed bracket"));
         }
     }
 }

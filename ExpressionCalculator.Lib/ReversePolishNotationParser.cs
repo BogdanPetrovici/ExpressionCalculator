@@ -13,17 +13,12 @@ namespace ExpressionCalculator.Lib
             _lexer = lexer;
         }
 
-        public Queue<IExpressionSymbol> Parse(IEnumerator<IExpressionSymbol> tokenEnumerator)
+        private Queue<IExpressionSymbol> Parse(IEnumerator<IExpressionSymbol> tokenEnumerator, Stack<Separator> separatorBuffer)
         {
             Queue<IExpressionSymbol> postfixedExpression = new Queue<IExpressionSymbol>();
             Stack<Operator> operatorBuffer = new Stack<Operator>();
-            // end of expression
-            if (!tokenEnumerator.MoveNext())
-            {
-                return postfixedExpression;
-            }
 
-            do
+            while (tokenEnumerator.MoveNext())
             {
                 IExpressionSymbol token = tokenEnumerator.Current;
                 if (token is Separator)
@@ -31,8 +26,10 @@ namespace ExpressionCalculator.Lib
                     var separator = token as Separator;
                     if (separator.IsOpeningBracket())
                     {
+                        separatorBuffer.Push(separator);
+
                         // if we encounter open bracket, parse subexpression and add it to current expression queue
-                        Queue<IExpressionSymbol> postfixedSubexpression = Parse(tokenEnumerator);
+                        Queue<IExpressionSymbol> postfixedSubexpression = Parse(tokenEnumerator, separatorBuffer);
                         while (postfixedSubexpression.Count > 0)
                         {
                             postfixedExpression.Enqueue(postfixedSubexpression.Dequeue());
@@ -40,6 +37,13 @@ namespace ExpressionCalculator.Lib
                     }
                     else
                     {
+                        if(separatorBuffer.Count == 0)
+                        {
+                            throw new InvalidOperationException("Missing open bracket");
+                        }
+
+                        separatorBuffer.Pop();
+
                         // Add remaining operators from buffer to subexpression
                         while (operatorBuffer.Count > 0)
                         {
@@ -67,7 +71,7 @@ namespace ExpressionCalculator.Lib
                 {
                     postfixedExpression.Enqueue(token as Operand);
                 }
-            } while (tokenEnumerator.MoveNext());
+            }
 
             // Add remaining operators from buffer to expression
             while (operatorBuffer.Count > 0)
@@ -81,7 +85,17 @@ namespace ExpressionCalculator.Lib
         public Queue<IExpressionSymbol> Parse()
         {
             var tokenEnumerator = _lexer.GetTokens().GetEnumerator();
-            return Parse(tokenEnumerator);
+            Stack<Separator> separatorBuffer = new Stack<Separator>();
+
+            var postfixedExpression =  Parse(tokenEnumerator, separatorBuffer);
+
+            // check if we had any open brackets that weren't closed
+            if (separatorBuffer.Count > 0)
+            {
+                throw new InvalidOperationException("Missing closed bracket");
+            }
+
+            return postfixedExpression;
         }
     }
 }

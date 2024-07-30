@@ -27,8 +27,20 @@ namespace ExpressionCalculator.Lib
                 var expressionSymbol = _postfixedExpression.Dequeue();
                 if (expressionSymbol is IOperator)
                 {
+                    if (operandStack.Count == 0)
+                    {
+                        throw new InvalidOperationException("Missing operand");
+                    }
+
                     var secondOperand = operandStack.Pop();
+
+                    if (operandStack.Count == 0)
+                    {
+                        throw new InvalidOperationException("Missing operand");
+                    }
+
                     var firstOperand = operandStack.Pop();
+
                     switch (expressionSymbol.ToString())
                     {
                         case "+": operandStack.Push(firstOperand + secondOperand); break;
@@ -44,6 +56,11 @@ namespace ExpressionCalculator.Lib
                 {
                     operandStack.Push((expressionSymbol as IOperand).Value);
                 }
+            }
+
+            if (operandStack.Count > 1)
+            {
+                throw new InvalidOperationException();
             }
 
             return operandStack.Pop();
