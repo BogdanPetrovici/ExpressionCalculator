@@ -6,7 +6,9 @@ using System.Threading.Tasks;
 
 namespace ExpressionCalculator.Lib
 {
-
+    /// <summary>
+    /// Represents an integer operand in arithmetic operations
+    /// </summary>
     public class Operand : IOperand
     {
         private long _value;
@@ -16,7 +18,7 @@ namespace ExpressionCalculator.Lib
             long value;
             if (!long.TryParse(operandText, out value))
             {
-                throw new ArgumentException("Invalid operand");
+                throw new ArgumentException(string.Format("Invalid operand: {0}", operandText));
             }
 
             _value = value;

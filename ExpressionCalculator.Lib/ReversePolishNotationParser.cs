@@ -4,6 +4,11 @@ using System.Text.RegularExpressions;
 
 namespace ExpressionCalculator.Lib
 {
+    /// <summary>
+    /// Class for parsing an infixed arithmetic expression supplied in the form of a list of IExpressionSymbol instances 
+    /// into postfixed notation (Reverse Polish Notation) stored in a queue of IExpressionSymbol instances.
+    /// Handles priority imposed by round brackets and removes them from the end result.
+    /// </summary>
     public class ReversePolishNotationParser : IParser
     {
         private ILexer _lexer;
@@ -13,6 +18,13 @@ namespace ExpressionCalculator.Lib
             _lexer = lexer;
         }
 
+        /// <summary>
+        /// Recursive method for iterating through an IExpressionSymbol token enumerator and generating postfixed expressions.
+        /// </summary>
+        /// <param name="tokenEnumerator">Enumerator supplying IExpressionSymbol instances (tokens) in their original infixed order</param>
+        /// <param name="separatorBuffer">Stack keeping track of open round brackets between recursive calls</param>
+        /// <returns>A queue of IExpressionSymbol instances representing the postfixed notation of the current subexpression defined by round brackets (or the entire expression)</returns>
+        /// <exception cref="InvalidOperationException">If a closing bracket is detected without there being an open bracket in the buffer, an exception is thrown</exception>
         private Queue<IExpressionSymbol> Parse(IEnumerator<IExpressionSymbol> tokenEnumerator, Stack<Separator> separatorBuffer)
         {
             Queue<IExpressionSymbol> postfixedExpression = new Queue<IExpressionSymbol>();
@@ -82,6 +94,11 @@ namespace ExpressionCalculator.Lib
             return postfixedExpression;
         }
 
+        /// <summary>
+        /// Parses the output of the lexer into a postfixed notation
+        /// </summary>
+        /// <returns>A queue representing the postfixed notation of the infixed arithmetic expression supplied by the user</returns>
+        /// <exception cref="InvalidOperationException">If after processing there are unhandled open round brackets, an exception is thrown</exception>
         public Queue<IExpressionSymbol> Parse()
         {
             var tokenEnumerator = _lexer.GetTokens().GetEnumerator();
