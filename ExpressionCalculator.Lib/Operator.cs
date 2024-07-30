@@ -11,7 +11,7 @@ namespace ExpressionCalculator.Lib
     /// </summary>
     public class Operator : IOperator
     {
-        private readonly static string _allowedOperators = "+-*/";
+        private readonly static string _allowedOperators = "+-*/^";
         private string _operator;
         private int _priority;
 
@@ -34,6 +34,9 @@ namespace ExpressionCalculator.Lib
                     break;
                 case "/":
                     _priority = 3;
+                    break;
+                case "^":
+                    _priority = 4;
                     break;
             }
         }

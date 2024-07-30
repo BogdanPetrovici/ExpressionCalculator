@@ -193,5 +193,31 @@ namespace ExpressionCalculator.Test
             var exception = Assert.Throws<InvalidOperationException>(() => converter.Parse());
             Assert.That(exception.Message, Is.EqualTo("Missing closed bracket"));
         }
+
+        [Test]
+        public void ExpressionConverter_SimpleExponentiationExpression_ComputesExpression()
+        {
+            var lexer = new ArithmeticExpressionLexer("5^2");
+            var converter = new ReversePolishNotationParser(lexer);
+            var computer = new ExpressionComputer(converter.Parse());
+            var result = computer.Compute();
+            Assert.That(result, Is.EqualTo(25));
+
+            lexer = new ArithmeticExpressionLexer("5^0");
+            converter = new ReversePolishNotationParser(lexer);
+            computer = new ExpressionComputer(converter.Parse());
+            result = computer.Compute();
+            Assert.That(result, Is.EqualTo(1));
+        }
+
+        [Test]
+        public void ExpressionConverter_InputExpressionWithExponentiation_ComputesExpression()
+        {
+            var lexer = new ArithmeticExpressionLexer("(5-1)^(1+2)/8");
+            var converter = new ReversePolishNotationParser(lexer);
+            var computer = new ExpressionComputer(converter.Parse());
+            var result = computer.Compute();
+            Assert.That(result, Is.EqualTo(8));
+        }
     }
 }

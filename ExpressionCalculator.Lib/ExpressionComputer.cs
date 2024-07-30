@@ -50,6 +50,9 @@ namespace ExpressionCalculator.Lib
                             if (secondOperand == 0) { throw new InvalidOperationException("Division by zero."); }
                             operandStack.Push(firstOperand / secondOperand);
                             break;
+                        case "^":
+                            operandStack.Push((long)Math.Pow(firstOperand, secondOperand));
+                            break;
                     }
                 }
                 else
