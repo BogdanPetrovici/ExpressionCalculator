@@ -7,6 +7,10 @@ using System.Threading.Tasks;
 
 namespace ExpressionCalculator.Lib
 {
+    /// <summary>
+    /// Processes a string representing an arithmetic expression as a list of tokens.
+    /// Handles invalid character errors
+    /// </summary>
     public class ArithmeticExpressionLexer : ILexer
     {
         private readonly string _expression;

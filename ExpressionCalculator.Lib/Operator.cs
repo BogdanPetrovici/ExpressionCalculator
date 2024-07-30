@@ -7,7 +7,14 @@ using System.Threading.Tasks;
 namespace ExpressionCalculator.Lib
 {
     /// <summary>
-    /// Class representing the operator in an arithmetic expression. Holds an internal priority used for comparing operators.
+    /// Class representing the operator in an arithmetic expression. 
+    /// Holds an internal priority used for comparing operators.
+    /// Allowed operators: 
+    /// addition: + -> a + b
+    /// substraction: - -> a - b
+    /// multiplication: * -> a * b
+    /// division: / -> a / b
+    /// exponentiation: ^ -> a ^ b
     /// </summary>
     public class Operator : IOperator
     {
@@ -19,7 +26,7 @@ namespace ExpressionCalculator.Lib
         {
             if (!_allowedOperators.Contains(c))
             {
-                throw new ArgumentException("Invalid operator");
+                throw new ArgumentException(string.Format("Invalid operator: {0}", c));
             }
 
             _operator = c;
@@ -92,6 +99,11 @@ namespace ExpressionCalculator.Lib
 
         public override string ToString() { return _operator.ToString(); }
 
+        /// <summary>
+        /// Determines whether the supplied string is a valid operator.
+        /// </summary>
+        /// <param name="c">String representing a potential expression operator</param>
+        /// <returns>True, if the string is a valid operator. False, otherwise.</returns>
         public static bool IsOperator(string c) { return _allowedOperators.Contains(c); }
     }
 }
