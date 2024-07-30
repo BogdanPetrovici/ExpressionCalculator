@@ -8,6 +8,6 @@
         /// <summary>
         /// Numeric value of an expression operand
         /// </summary>
-        public long Value { get; }
+        public double Value { get; }
     }
 }

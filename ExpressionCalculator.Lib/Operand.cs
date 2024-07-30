@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -11,12 +12,12 @@ namespace ExpressionCalculator.Lib
     /// </summary>
     public class Operand : IOperand
     {
-        private long _value;
+        private double _value;
 
         public Operand(string operandText)
         {
-            long value;
-            if (!long.TryParse(operandText, out value))
+            double value;
+            if (!double.TryParse(operandText, NumberStyles.Any, CultureInfo.InvariantCulture, out value))
             {
                 throw new ArgumentException(string.Format("Invalid operand: {0}", operandText));
             }
@@ -24,7 +25,7 @@ namespace ExpressionCalculator.Lib
             _value = value;
         }
 
-        public long Value { get { return _value; } }
+        public double Value { get { return _value; } }
 
         public static bool operator >(Operand left, Operand right)
         {
@@ -38,7 +39,7 @@ namespace ExpressionCalculator.Lib
 
         public override string ToString()
         {
-            return _value.ToString();
+            return _value.ToString(CultureInfo.InvariantCulture);
         }
     }
 }

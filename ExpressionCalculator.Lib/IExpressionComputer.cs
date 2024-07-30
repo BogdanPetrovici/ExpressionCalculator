@@ -15,6 +15,6 @@ namespace ExpressionCalculator.Lib
         /// Computes the result of the arithmetic expression
         /// </summary>
         /// <returns>The integer result of the arithmetic expression</returns>
-        public long Compute();
+        public double Compute();
     }
 }
