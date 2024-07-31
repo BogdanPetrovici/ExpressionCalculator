@@ -22,6 +22,8 @@ namespace ExpressionCalculator
             {
                 Console.WriteLine("An error occurred: {0}", ex.Message);
             }
+
+            Console.ReadLine();
         }
     }
 }
