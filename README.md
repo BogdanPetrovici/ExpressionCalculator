@@ -1,7 +1,11 @@
 # ExpressionCalculator
 Simple console application for computing results to arithmetic expressions
 
+# System requirements
+Windows workstation with .NET 6 runtime installed.
+
 # Usage
+Download the archive with the binaries from release 1.0.0 and unpack it. Run ExpressionCalculator.exe.
 When prompted, write the desired expression without any whitespaces and press the Return key.
 If the expression can be evaluated the result will be displayed below, otherwise an error message will be displayed.
 
